@@ -1,0 +1,66 @@
+# =========================
+# 🏗️ Build outputs
+# =========================
+build/
+out/
+bin/
+*.bin
+*.img
+*.iso
+*.elf
+*.o
+*.obj
+*.d
+
+# =========================
+# 🧰 Cross-compiler toolchain
+# (if you build or store it locally in repo)
+# =========================
+cross-compiler/
+toolchain/
+x86_64-elf-gcc/
+x86_64-elf-binutils/
+gcc-cross/
+binutils-cross/
+
+# =========================
+# 🧠 OS development artifacts
+# =========================
+kernel.sym
+kernel.map
+
+# =========================
+# 💻 CLion / JetBrains
+# =========================
+.idea/
+cmake-build-*/
+*.iml
+
+# =========================
+# 🍎 macOS junk
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# =========================
+# 🐞 logs / debugging
+# =========================
+*.log
+gdb.txt
+qemu.log
+
+# =========================
+# 📦 temporary files
+# =========================
+*.tmp
+*.swp
+*.swo
+*~
+
+# =========================
+# 🔧 Optional: QEMU snapshots
+# =========================
+*.qcow2
+*.snap
