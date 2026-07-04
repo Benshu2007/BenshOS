@@ -5,6 +5,7 @@ INPUT(
     build/terminal.o
     build/common.o
     build/vga.o
+    build/keyboard.o
     build/kernel.o
 )
 

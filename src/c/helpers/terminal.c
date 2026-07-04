@@ -1,4 +1,5 @@
 #include "terminal.h"
+#include <stdint.h>
 
 void terminal_initialize (void) {
     terminal_buffer = (uint16_t*)VGA_MEMORY;
@@ -57,4 +58,13 @@ void terminal_write (const char* data, size_t size) {
 
 void terminal_writestring(const char* data) {
     terminal_write(data, strlen(data));
+}
+
+void terminal_readchar() {
+    uint8_t ch = inb(0x60);
+    terminal_putchar(ch);
+}
+
+void terminal_arrow_handle(uint16_t sc) {
+    
 }

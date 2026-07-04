@@ -6,6 +6,7 @@ i686-elf-gcc -ffreestanding -c src/c/kernel.c -o build/kernel.o
 i686-elf-gcc -ffreestanding -c src/c/helpers/vga.c -o build/vga.o
 i686-elf-gcc -ffreestanding -c src/c/helpers/terminal.c -o build/terminal.o
 i686-elf-gcc -ffreestanding -c src/c/helpers/common.c -o build/common.o
+i686-elf-gcc -ffreestanding -c src/c/helpers/keyboard.c -o build/keyboard.o
 nasm -f elf32 src/asm/kernel_entry.asm -o build/kernel_entry.o
 
 i686-elf-ld -T linker.ld
