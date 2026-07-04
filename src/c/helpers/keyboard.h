@@ -204,8 +204,10 @@ static const char shift_nums[10] = {
 
 KeyboardEvent keyboard_input(void);
 void keyboard_handle_event(KeyboardEvent ev);
+static bool is_arrow(KEYBOARD_CODE code);
 static bool is_printable(KEYBOARD_CODE code);
 static char keyboard_translate(KeyboardEvent ev);
 static void update_shift(uint8_t sc);
+static void handle_arrow(KEYBOARD_CODE code);
 static char convert_shift(char c);
 KEYBOARD_CODE keyboard_translate_scancode(uint8_t scancode);

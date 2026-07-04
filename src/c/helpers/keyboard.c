@@ -31,6 +31,8 @@ KeyboardEvent keyboard_input() {
 void keyboard_handle_event(KeyboardEvent ev) {
     if (is_printable(ev.code))
         terminal_putchar(keyboard_translate(ev));
+    if (is_arrow(ev.code))
+        handle_arrow(ev.code);
 }
 
 static char keyboard_translate(KeyboardEvent ev) {
@@ -83,6 +85,13 @@ static char keyboard_translate(KeyboardEvent ev) {
     }
 }
 
+static bool is_arrow(KEYBOARD_CODE code) {
+    return code == KEY_UP   ||
+           code == KEY_DOWN ||
+           code == KEY_LEFT ||
+           code == KEY_RIGHT;
+}
+
 static bool is_printable(KEYBOARD_CODE code) {
     return (code >= KEY_A && code <= KEY_Z)           ||  /* Letters */
            (code >= KEY_0 && code <= KEY_9)           ||  /* Numbers */
@@ -103,6 +112,25 @@ static void update_shift(uint8_t sc)
         case 0xAA:
         case 0xB6:
             shift = false;
+            break;
+    }
+}
+
+static void handle_arrow(KEYBOARD_CODE code) {
+    switch (code) {
+        case KEY_UP: 
+            terminal_arrow_handle('u');
+            break;
+        case KEY_DOWN: 
+            terminal_arrow_handle('d');
+            break;
+        case KEY_LEFT: 
+            terminal_arrow_handle('l');
+            break;
+        case KEY_RIGHT: 
+            terminal_arrow_handle('r');
+            break;
+        default:
             break;
     }
 }

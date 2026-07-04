@@ -37,7 +37,7 @@ void vga_set_cursor(int row, int col);
 //      'r' - right
 //      'u' - up
 //      'd' - down
-void move_cursor(size_t* row, size_t* col, char d);
+void vga_move_cursor(size_t* row, size_t* col, char d);
 
 
 #endif //SRC_VGA_H

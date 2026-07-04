@@ -1,4 +1,5 @@
 #include "terminal.h"
+#include "vga.h"
 #include <stdint.h>
 
 void terminal_initialize (void) {
@@ -65,6 +66,6 @@ void terminal_readchar() {
     terminal_putchar(ch);
 }
 
-void terminal_arrow_handle(uint16_t sc) {
-    
+void terminal_arrow_handle(char d) {
+    vga_move_cursor(&terminal_row, &terminal_col, d);
 }
