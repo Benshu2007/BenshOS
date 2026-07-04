@@ -69,3 +69,23 @@ void terminal_readchar() {
 void terminal_arrow_handle(char d) {
     vga_move_cursor(&terminal_row, &terminal_col, d);
 }
+
+void terminal_delete_last() {
+    /* Nothing to delete if already at the origin */
+    if (terminal_row == 0 && terminal_col == 0)
+        return;
+
+    /* Step the cursor back one position */
+    if (terminal_col == 0) {
+        terminal_row--;
+        terminal_col = VGA_WIDTH - 1;
+    } else {
+        terminal_col--;
+    }
+
+    /* Overwrite the character with a blank */
+    terminal_putentryat(' ', terminal_color, terminal_col, terminal_row);
+
+    /* Sync the hardware cursor */
+    vga_set_cursor(terminal_row, terminal_col);
+}

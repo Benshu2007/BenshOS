@@ -33,6 +33,10 @@ void keyboard_handle_event(KeyboardEvent ev) {
         terminal_putchar(keyboard_translate(ev));
     if (is_arrow(ev.code))
         handle_arrow(ev.code);
+    if (ev.code == KEY_BACKSPACE)
+        terminal_delete_last();
+    if (ev.code == KEY_CAPS_LOCK)
+        caps_lock = !caps_lock;
 }
 
 static char keyboard_translate(KeyboardEvent ev) {

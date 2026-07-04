@@ -1,6 +1,6 @@
 #pragma once
-#ifndef SRC_TERMINAL_H
-#define SRC_TERMINAL_H
+#ifndef TERMINAL_H
+#define TERMINAL_H
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -21,5 +21,6 @@ void terminal_write (const char* data, size_t size);
 void terminal_writestring(const char* data);
 void terminal_readchar();
 void terminal_arrow_handle(char d);
+void terminal_delete_last();
 
-#endif //SRC_TERMINAL_H
+#endif //TERMINAL_H
