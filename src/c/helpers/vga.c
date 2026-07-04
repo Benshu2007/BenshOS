@@ -12,7 +12,6 @@ uint16_t vga_entry (unsigned char uc, uint8_t color) {
     return (uint16_t) uc | (uint16_t) color << 8;
 }
 
-
 void vga_disable_cursor (void) {
     outb(0x3D4, 0x0A);
     outb(0x3D5, 0x20);
@@ -36,4 +35,42 @@ void vga_set_cursor(int row, int col)
 
     outb(0x3D4, 0x0E);          // High byte
     outb(0x3D5, (pos >> 8) & 0xFF);
+}
+
+void vga_move_cursor(size_t* row, size_t *col, char d) {
+    switch (d) {
+        case 'l':
+            if (*col == 0) {
+                if (*row == 0) {
+                    break;
+                }
+                (*row)--;
+                *col = VGA_WIDTH;
+            } else 
+                (*col)--;
+            break;
+        
+        case 'r':
+            if (*col == VGA_WIDTH) {
+                if (*row == VGA_HEIGHT) {
+                    break;
+                }
+                (*row)++;
+                *col = 0;
+            }
+            (*col)++;
+            break;
+
+        case 'u':
+            if (*row != 0)
+                (*row)--;
+            break;
+
+        case 'd':
+            if (*row != VGA_HEIGHT)
+                (*row)++;
+            break;
+    }
+
+    vga_set_cursor(*row, *col);
 }

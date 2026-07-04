@@ -3,6 +3,7 @@
 #define SRC_VGA_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
@@ -27,12 +28,16 @@ enum vga_color {
     VGA_COLOR_WHITE = 15,
 };
 
-static void outb(uint16_t port, uint8_t value);
 uint8_t vga_entry_color (enum vga_color fg, enum vga_color bg);
 uint16_t vga_entry (unsigned char uc, uint8_t color);
 void vga_disable_cursor (void);
 void vga_enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
 void vga_set_cursor(int row, int col);
+// d==  'l' - left
+//      'r' - right
+//      'u' - up
+//      'd' - down
+void vga_move_cursor(size_t* row, size_t* col, char d);
 
 
 #endif //SRC_VGA_H

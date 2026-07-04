@@ -1,4 +1,6 @@
 #include "terminal.h"
+#include "vga.h"
+#include <stdint.h>
 
 void terminal_initialize (void) {
     terminal_buffer = (uint16_t*)VGA_MEMORY;
@@ -57,4 +59,33 @@ void terminal_write (const char* data, size_t size) {
 
 void terminal_writestring(const char* data) {
     terminal_write(data, strlen(data));
+}
+
+void terminal_readchar() {
+    uint8_t ch = inb(0x60);
+    terminal_putchar(ch);
+}
+
+void terminal_arrow_handle(char d) {
+    vga_move_cursor(&terminal_row, &terminal_col, d);
+}
+
+void terminal_delete_last() {
+    /* Nothing to delete if already at the origin */
+    if (terminal_row == 0 && terminal_col == 0)
+        return;
+
+    /* Step the cursor back one position */
+    if (terminal_col == 0) {
+        terminal_row--;
+        terminal_col = VGA_WIDTH - 1;
+    } else {
+        terminal_col--;
+    }
+
+    /* Overwrite the character with a blank */
+    terminal_putentryat(' ', terminal_color, terminal_col, terminal_row);
+
+    /* Sync the hardware cursor */
+    vga_set_cursor(terminal_row, terminal_col);
 }

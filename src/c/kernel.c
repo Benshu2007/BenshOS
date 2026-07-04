@@ -1,4 +1,6 @@
 #include "helpers/terminal.h"
+#include "helpers/keyboard.h"
+#include <stdbool.h>
 
 #if defined(__linux__)
 #error "You are not using a cross-compiler, you will most certainly run into trouble"
@@ -14,5 +16,9 @@ void kernel_main (void) {
 	terminal_writestring ("Hello World!\n");
 
 	terminal_writestring ("This is terminal!");
-	while (true) {}
+	while (true) {
+		KeyboardEvent ch = keyboard_input();
+		if (ch.code != KEY_NONE)
+			keyboard_handle_event(ch);
+	}
 }
