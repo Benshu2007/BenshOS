@@ -3,7 +3,8 @@
 #include <stdint.h>
 
 void terminal_initialize (void) {
-    terminal_buffer = (uint16_t*)VGA_MEMORY;
+    terminal_viewport_buffer = (uint16_t*)VGA_MEMORY;
+    //terminal_top = 0;
     terminal_row = 0;
     terminal_col = 0;
     terminal_color = vga_entry_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
@@ -11,7 +12,7 @@ void terminal_initialize (void) {
     for (size_t y = 0; y < VGA_HEIGHT; y++) {
         for (size_t x = 0; x < VGA_WIDTH; x++) {
             const size_t index = y * VGA_WIDTH + x;
-            terminal_buffer[index] = vga_entry(' ', terminal_color);
+            terminal_viewport_buffer[index] = vga_entry(' ', terminal_color);
         }
     }
     vga_enable_cursor(14, 15);
@@ -24,31 +25,24 @@ void terminal_setcolor (uint8_t color) {
 
 void terminal_putentryat (char c, uint8_t color, size_t x, size_t y) {
     const size_t index = y * VGA_WIDTH + x;
-    terminal_buffer[index] = vga_entry(c, color);
+    terminal_viewport_buffer[index] = vga_entry(c, color);
 }
 
 void terminal_putchar (char c) {
-    if (c == '\n') {
+    
+    if (!is_escape_sequence(c))
+        terminal_putentryat(c, terminal_color, terminal_col, terminal_row);
+
+    if (++terminal_col > VGA_WIDTH || c == '\n') {
         terminal_col = 0;
-        ++terminal_row;
-
-        if (terminal_row >= VGA_HEIGHT)
-            terminal_row = 0;
-
-        vga_set_cursor(terminal_row, terminal_col);
-        return;
-    }
-
-    terminal_putentryat(c, terminal_color, terminal_col, terminal_row);
-
-    if (++terminal_col == VGA_WIDTH) {
-        terminal_col = 0;
-        if (++terminal_row == VGA_HEIGHT) {
-            terminal_row = 0;
-        }
+        terminal_row = (terminal_row + 1) % VGA_HEIGHT;
+        // if (++terminal_row > VGA_HEIGHT) {
+        //     terminal_top = (terminal_top + 1) % ((sizeof(terminal_buffer) / VGA_WIDTH) - VGA_HEIGHT);
+        // }
     }
 
     vga_set_cursor(terminal_row, terminal_col);
+
 }
 
 void terminal_write (const char* data, size_t size) {
@@ -88,4 +82,8 @@ void terminal_delete_last() {
 
     /* Sync the hardware cursor */
     vga_set_cursor(terminal_row, terminal_col);
+}
+
+bool is_escape_sequence(char c) {
+    return c == '\n' || c == '\r' || c == '\t' || c == '\t';
 }
