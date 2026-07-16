@@ -32,7 +32,7 @@ uint8_t vga_entry_color (enum vga_color fg, enum vga_color bg);
 uint16_t vga_entry (unsigned char uc, uint8_t color);
 void vga_disable_cursor (void);
 void vga_enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
-void vga_set_cursor(int row, int col);
+void vga_set_cursor(int col, int row);
 // d==  'l' - left
 //      'r' - right
 //      'u' - up
