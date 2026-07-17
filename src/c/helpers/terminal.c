@@ -189,7 +189,9 @@ void terminal_arrow_handle(char d) {
             if (terminal_row > 0) {
                 decrease_row();
                 line_limit = get_row_written_length(terminal_row);
-                if (terminal_col > line_limit) {
+                if (line_limit == 0) {
+                    terminal_col = 0;
+                } else if (terminal_col > line_limit) {
                     terminal_col = line_limit - 1;
                 }
             }
