@@ -33,6 +33,7 @@ kernel.map
 # 💻 CLion / JetBrains
 # =========================
 .idea/
+.clang-format
 cmake-build-*/
 *.iml
 

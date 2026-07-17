@@ -1,12 +1,12 @@
 #pragma once
-#ifndef SRC_VGA_H
-#define SRC_VGA_H
+#ifndef VGA_H
+#define VGA_H
 
 #include <stdint.h>
 #include <stddef.h>
 
 #define VGA_WIDTH 80
-#define VGA_HEIGHT 25
+#define VGA_HEIGHT 25 - 1
 #define VGA_MEMORY 0xB8000
 
 enum vga_color {
@@ -40,4 +40,4 @@ void vga_set_cursor(int col, int row);
 void vga_move_cursor(size_t* row, size_t* col, char d);
 
 
-#endif //SRC_VGA_H
+#endif //VGA_H
