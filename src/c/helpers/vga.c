@@ -26,7 +26,7 @@ void vga_enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
     outb(0x3D5, cursor_end);
 }
 
-void vga_set_cursor(int row, int col)
+void vga_set_cursor(int col, int row)
 {
     uint16_t pos = row * 80 + col;
 
@@ -72,5 +72,5 @@ void vga_move_cursor(size_t* row, size_t *col, char d) {
             break;
     }
 
-    vga_set_cursor(*row, *col);
+    vga_set_cursor(*col, *row);
 }

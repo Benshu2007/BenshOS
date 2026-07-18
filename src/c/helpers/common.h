@@ -1,11 +1,13 @@
-#include <stddef.h>
-#include <stdint.h>
+#ifndef COMMON_H
+#define COMMON_H
 
-#ifndef SRC_COMMON_H
-#define SRC_COMMON_H
+#include <stdint.h>
+#include <stddef.h>
 
 size_t strlen (const char* str);
 void outb(uint16_t port, uint8_t value);
 uint8_t inb(uint16_t port);
+void* memset(void* dest, int value, size_t count);
 
-#endif //SRC_COMMON_H
+
+#endif //COMMON_H

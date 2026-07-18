@@ -29,114 +29,131 @@ KeyboardEvent keyboard_input() {
 }
 
 void keyboard_handle_event(KeyboardEvent ev) {
-    if (is_printable(ev.code))
-        terminal_putchar(keyboard_translate(ev));
-    if (is_arrow(ev.code))
-        handle_arrow(ev.code);
-    if (ev.code == KEY_BACKSPACE)
-        terminal_delete_last();
-    if (ev.code == KEY_CAPS_LOCK)
-        caps_lock = !caps_lock;
+  if (ev.code == KEY_ENTER && !ev.shift)
+    end_input();
+  else if (is_printable(ev))
+    terminal_add_input(keyboard_translate(ev));
+  else if (is_arrow(ev.code))
+    handle_arrow(ev.code);
+  else if (ev.code == KEY_BACKSPACE)
+    terminal_delete_last();
+  else if (ev.code == KEY_CAPS_LOCK)
+    caps_lock = !caps_lock;
 }
 
 static char keyboard_translate(KeyboardEvent ev) {
-    KEYBOARD_CODE code = ev.code;
-    bool upper = ev.shift ^ ev.caps_lock; // XOR: either shift or caps, not both
+  KEYBOARD_CODE code = ev.code;
+  bool upper = ev.shift ^ ev.caps_lock; // XOR: either shift or caps, not both
 
-    /* Letters */
-    if (code >= KEY_A && code <= KEY_Z) {
-        char c = 'a' + (code - KEY_A);
-        return upper ? c - 'a' + 'A' : c;
-    }
+  /* Letters */
+  if (code >= KEY_A && code <= KEY_Z) {
+    char c = 'a' + (code - KEY_A);
+    return upper ? c - 'a' + 'A' : c;
+  }
 
-    /* Top-row numbers */
-    if (code >= KEY_0 && code <= KEY_9) {
-        char c = '0' + (code - KEY_0);
-        return ev.shift ? shift_nums[code - KEY_0] : c;
-    }
+  /* Top-row numbers */
+  if (code >= KEY_0 && code <= KEY_9) {
+    char c = '0' + (code - KEY_0);
+    return ev.shift ? shift_nums[code - KEY_0] : c;
+  }
 
-    /* Keypad digits */
-    if (code >= KEY_KP_0 && code <= KEY_KP_9)
-        return '0' + (code - KEY_KP_0);
+  /* Keypad digits */
+  if (code >= KEY_KP_0 && code <= KEY_KP_9)
+    return '0' + (code - KEY_KP_0);
 
-    switch (code) {
-        /* Symbols (unshifted / shifted) */
-        case KEY_GRAVE:         return ev.shift ? '~'  : '`';
-        case KEY_MINUS:         return ev.shift ? '_'  : '-';
-        case KEY_EQUALS:        return ev.shift ? '+'  : '=';
-        case KEY_LEFT_BRACKET:  return ev.shift ? '{'  : '[';
-        case KEY_RIGHT_BRACKET: return ev.shift ? '}'  : ']';
-        case KEY_BACKSLASH:     return ev.shift ? '|'  : '\\';
-        case KEY_SEMICOLON:     return ev.shift ? ':'  : ';';
-        case KEY_APOSTROPHE:    return ev.shift ? '"'  : '\'';
-        case KEY_COMMA:         return ev.shift ? '<'  : ',';
-        case KEY_PERIOD:        return ev.shift ? '>'  : '.';
-        case KEY_SLASH:         return ev.shift ? '?'  : '/';
+  switch (code) {
+  /* Symbols (unshifted / shifted) */
+  case KEY_GRAVE:
+    return ev.shift ? '~' : '`';
+  case KEY_MINUS:
+    return ev.shift ? '_' : '-';
+  case KEY_EQUALS:
+    return ev.shift ? '+' : '=';
+  case KEY_LEFT_BRACKET:
+    return ev.shift ? '{' : '[';
+  case KEY_RIGHT_BRACKET:
+    return ev.shift ? '}' : ']';
+  case KEY_BACKSLASH:
+    return ev.shift ? '|' : '\\';
+  case KEY_SEMICOLON:
+    return ev.shift ? ':' : ';';
+  case KEY_APOSTROPHE:
+    return ev.shift ? '"' : '\'';
+  case KEY_COMMA:
+    return ev.shift ? '<' : ',';
+  case KEY_PERIOD:
+    return ev.shift ? '>' : '.';
+  case KEY_SLASH:
+    return ev.shift ? '?' : '/';
 
-        /* Keypad operators */
-        case KEY_KP_DECIMAL:    return '.';
-        case KEY_KP_DIVIDE:     return '/';
-        case KEY_KP_MULTIPLY:   return '*';
-        case KEY_KP_SUBTRACT:   return '-';
-        case KEY_KP_ADD:        return '+';
-        case KEY_KP_EQUALS:     return '=';
+  /* Keypad operators */
+  case KEY_KP_DECIMAL:
+    return '.';
+  case KEY_KP_DIVIDE:
+    return '/';
+  case KEY_KP_MULTIPLY:
+    return '*';
+  case KEY_KP_SUBTRACT:
+    return '-';
+  case KEY_KP_ADD:
+    return '+';
+  case KEY_KP_EQUALS:
+    return '=';
 
-        case KEY_SPACE:         return ' ';
+  case KEY_SPACE:
+    return ' ';
 
-        case KEY_ENTER:         return '\n';
+  case KEY_ENTER:
+    return '\n';
 
-        default:                return '\0'; /* not printable */
-    }
+  default:
+    return '\0'; /* not printable */
+  }
 }
 
 static bool is_arrow(KEYBOARD_CODE code) {
-    return code == KEY_UP   ||
-           code == KEY_DOWN ||
-           code == KEY_LEFT ||
-           code == KEY_RIGHT;
+  return code == KEY_UP || code == KEY_DOWN || code == KEY_LEFT ||
+         code == KEY_RIGHT;
 }
 
-static bool is_printable(KEYBOARD_CODE code) {
-    return (code >= KEY_A && code <= KEY_Z)           ||  /* Letters */
-           (code >= KEY_0 && code <= KEY_9)           ||  /* Numbers */
-           (code >= KEY_GRAVE && code <= KEY_SEMICOLON)||  /* Symbols */
-           code == KEY_SPACE ||
-           code == KEY_ENTER;
+static bool is_printable(KeyboardEvent ev) {
+  return (ev.code >= KEY_A && ev.code <= KEY_Z) ||             /* Letters */
+         (ev.code >= KEY_0 && ev.code <= KEY_9) ||             /* Numbers */
+         (ev.code >= KEY_GRAVE && ev.code <= KEY_SEMICOLON) || /* Symbols */
+         ev.code == KEY_SPACE || (ev.code == KEY_ENTER && ev.shift);
 }
 
-static void update_shift(uint8_t sc)
-{
-    switch (sc)
-    {
-        case 0x2A:
-        case 0x36:
-            shift = true;
-            break;
+static void update_shift(uint8_t sc) {
+  switch (sc) {
+  case 0x2A:
+  case 0x36:
+    shift = true;
+    break;
 
-        case 0xAA:
-        case 0xB6:
-            shift = false;
-            break;
-    }
+  case 0xAA:
+  case 0xB6:
+    shift = false;
+    break;
+  }
 }
 
 static void handle_arrow(KEYBOARD_CODE code) {
-    switch (code) {
-        case KEY_UP: 
-            terminal_arrow_handle('u');
-            break;
-        case KEY_DOWN: 
-            terminal_arrow_handle('d');
-            break;
-        case KEY_LEFT: 
-            terminal_arrow_handle('l');
-            break;
-        case KEY_RIGHT: 
-            terminal_arrow_handle('r');
-            break;
-        default:
-            break;
-    }
+  switch (code) {
+  case KEY_UP:
+    terminal_arrow_handle('u');
+    break;
+  case KEY_DOWN:
+    terminal_arrow_handle('d');
+    break;
+  case KEY_LEFT:
+    terminal_arrow_handle('l');
+    break;
+  case KEY_RIGHT:
+    terminal_arrow_handle('r');
+    break;
+  default:
+    break;
+  }
 }
 
 static char convert_shift(char c) {
@@ -146,7 +163,6 @@ static char convert_shift(char c) {
     return shift_nums[c - '0'];
   return c;
 }
-
 
 KEYBOARD_CODE keyboard_translate_scancode(uint8_t scancode) {
   static bool extended = false;
@@ -158,8 +174,8 @@ KEYBOARD_CODE keyboard_translate_scancode(uint8_t scancode) {
   }
 
   // Remove release bit
-//   bool released = scancode & 0x80;
-//   scancode &= 0x7F;
+  //   bool released = scancode & 0x80;
+  //   scancode &= 0x7F;
 
   KEYBOARD_CODE key = KEY_NONE;
 
