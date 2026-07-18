@@ -8,9 +8,12 @@ i686-elf-gcc -ffreestanding -c src/c/helpers/terminal.c -o build/terminal.o
 i686-elf-gcc -ffreestanding -c src/c/helpers/common.c -o build/common.o
 i686-elf-gcc -ffreestanding -c src/c/helpers/bits.c -o build/bits.o
 i686-elf-gcc -ffreestanding -c src/c/gdt/gdt.c -o build/gdt.o
+i686-elf-gcc -ffreestanding -c src/c/idt/idt.c -o build/idt.o
 i686-elf-gcc -ffreestanding -c src/c/helpers/keyboard.c -o build/keyboard.o
 nasm -f elf32 src/asm/kernel_entry.asm -o build/kernel_entry.o
 nasm -f elf32 src/asm/flush_gdt.asm -o build/flush_gdt.o
+nasm -f elf32 src/asm/flush_idt.asm -o build/flush_idt.o
+nasm -f elf32 src/asm/isr/isr.asm -o build/isr.o
 
 i686-elf-ld -g -T linker.ld
 

@@ -1,5 +1,6 @@
 #include "gdt/gdt.h"
 #include "helpers/terminal.h"
+#include "idt/idt.h"
 #include <stdbool.h>
 
 #if defined(__linux__)
@@ -12,10 +13,13 @@
 #endif
 
 void kernel_main(void) {
-  gdt_init();
   terminal_start();
+  gdt_init();
+  idt_init();
 
   terminal_log("GDT LOADED");
+
+  int i = 5 / 0;
 
   while (true);
 }

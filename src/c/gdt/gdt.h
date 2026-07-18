@@ -5,6 +5,14 @@
 
 #define GDT_ENTRIES_LEN 5
 
+enum GDT_SELECTOR {
+    GDT_NULL = 0x00,
+    GDT_KERNEL_CODE = 0x08,
+    GDT_KERNEL_DATA = 0x10,
+    GDT_USER_CODE = 0x18,
+    GDT_USER_DATA = 0x20
+};
+
 typedef struct __attribute__((packed)) {
     uint16_t limit;
     uint32_t offset;

@@ -5,10 +5,13 @@ INPUT(
     build/terminal.o
     build/common.o
     build/gdt.o
+    build/idt.o
     build/vga.o
     build/keyboard.o
     build/kernel.o
     build/flush_gdt.o
+    build/flush_idt.o
+    build/isr.o
     build/bits.o
 )
 
