@@ -1,5 +1,5 @@
 #include "gdt/gdt.h"
-#include "helpers/terminal.h"
+#include "terminal/terminal.h"
 #include "idt/idt.h"
 #include <stdbool.h>
 
@@ -19,7 +19,8 @@ void kernel_main(void) {
 
   terminal_log("GDT LOADED");
 
-  int i = 5 / 0;
+  // check the idt
+  // int i = 5 / 0;
 
   while (true);
 }

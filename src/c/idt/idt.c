@@ -1,6 +1,5 @@
 #include "idt.h"
 #include "../gdt/gdt.h"
-#include "../helpers/terminal.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -10,17 +9,6 @@ static bool vectors[IDT_ENTRIES_LEN];
 
 extern void* isr_stub_table[];
 extern void flush_idt(idtr_t* idtr);
-
-
-__attribute__((noreturn))
-void exception_handler(uint32_t vector);
-void exception_handler(uint32_t vector) {
-    for (int i = 0; i < vector; ++i) 
-        terminal_log("Exception");
-    while(1) {
-        __asm__ volatile ("hlt");
-    }
-}
 
 static void idt_set_descriptor(uint8_t vector, void *isr, uint8_t flags) {
     idt_entry_t* descriptor = &idt[vector];

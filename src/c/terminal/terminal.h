@@ -11,6 +11,8 @@ void terminal_delete_last(void);
 void terminal_arrow_handle(char d);
 void terminal_add_input(char c);
 void end_input(void);
+void terminal_log_number(uint32_t number);
+void terminal_log_hex(uint32_t hex);
 void terminal_log(const char* string);
 void terminal_start(void);
 

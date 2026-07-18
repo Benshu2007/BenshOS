@@ -1,7 +1,6 @@
 #include "terminal.h"
-#include "common.h"
-#include "keyboard.h"
-#include "vga.h"
+#include "../helpers/keyboard.h"
+#include "../helpers/vga.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -318,8 +317,38 @@ void end_input(void) {
   reset_input();
 }
 
+void terminal_log_hex(uint32_t hex) {
+  char hex_digits[] = "0123456789abcdef";
+  char buffer[9];
+  uint32_t temp = hex;
+  buffer[8] = '\0';
+
+  terminal_writestring("0x");
+  for (int i = 7; i >= 0; --i) {
+    buffer[i] = hex_digits[temp & 0x0F];
+    temp >>= 4;
+  }
+
+  terminal_writestring(buffer);
+  terminal_putchar('\n');
+}
+
+void terminal_log_number(uint32_t number) {
+  if (number == 0) {
+    terminal_writestring("0\n");
+    return;
+  }
+
+  uint32_t temp = number;
+  while (temp > 0) {
+    terminal_putchar(temp % 10);
+    temp /= 10;
+  }
+  terminal_putchar('\n');
+}
+
 void terminal_log(const char *string) {
-  terminal_writestring("\nLOG>>>>>");
+  terminal_writestring("\nLOG>");
   terminal_writestring(string);
   terminal_writestring("\n");
 }

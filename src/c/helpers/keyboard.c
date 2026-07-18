@@ -1,5 +1,5 @@
 #include "keyboard.h"
-#include "terminal.h"
+#include "../terminal/terminal.h"
 
 static bool shift = false;
 static bool caps_lock = false;

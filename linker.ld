@@ -12,6 +12,7 @@ INPUT(
     build/flush_gdt.o
     build/flush_idt.o
     build/isr.o
+    build/interrupts.o
     build/bits.o
 )
 
