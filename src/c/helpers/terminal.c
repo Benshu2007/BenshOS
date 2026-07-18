@@ -146,6 +146,12 @@ static void terminal_putchar(char c) {
   terminal_flush();
 }
 
+static void terminal_writestring(const char *data) {
+  terminal_write(data, strlen(data));
+
+  terminal_flush();
+}
+
 static void print_terminal_message() {
   const char *terminal_msg =
       "____  _____ _   _  ___  ____\n"
@@ -214,12 +220,6 @@ static void terminal_recv(void) {
 // --- PUBLIC TERMINAL INTERFACE ---
 
 void terminal_setcolor(uint8_t color) { terminal_color = color; }
-
-void terminal_writestring(const char *data) {
-  terminal_write(data, strlen(data));
-
-  terminal_flush();
-}
 
 void terminal_arrow_handle(char d) {
   size_t line_limit = 0;
@@ -318,12 +318,14 @@ void end_input(void) {
   reset_input();
 }
 
+void terminal_log(const char *string) {
+  terminal_writestring("\nLOG>>>>>");
+  terminal_writestring(string);
+  terminal_writestring("\n");
+}
+
 void terminal_start(void) {
   terminal_initialize();
 
   print_terminal_message();
-
-  while (true) {
-    terminal_recv();
-  }
 }

@@ -4,9 +4,12 @@ INPUT(
     build/kernel_entry.o
     build/terminal.o
     build/common.o
+    build/gdt.o
     build/vga.o
     build/keyboard.o
     build/kernel.o
+    build/flush_gdt.o
+    build/bits.o
 )
 
 OUTPUT(build/kernel.bin)

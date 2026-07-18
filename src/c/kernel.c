@@ -1,4 +1,4 @@
-#include "helpers/keyboard.h"
+#include "gdt/gdt.h"
 #include "helpers/terminal.h"
 #include <stdbool.h>
 
@@ -12,5 +12,10 @@
 #endif
 
 void kernel_main(void) {
+  gdt_init();
   terminal_start();
+
+  terminal_log("GDT LOADED");
+
+  while (true);
 }

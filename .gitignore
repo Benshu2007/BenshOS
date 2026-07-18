@@ -51,6 +51,7 @@ cmake-build-*/
 *.log
 gdb.txt
 qemu.log
+config.json
 
 # =========================
 # 📦 temporary files

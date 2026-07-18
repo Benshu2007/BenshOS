@@ -34,7 +34,7 @@ load_kernel:
     mov bx, ELF_LOAD_ADDR
 
 	mov ah, 0x02 ; BIOS function: read sectors
-	mov al, 30 ; number of sectors to reads
+	mov al, 50 ; number of sectors to reads
 
 	; disk details
 	mov ch, 0 ; cylinder
@@ -148,10 +148,13 @@ enter_protected_mode:
 
     jmp 0x08:pm_entry
 
+;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;; GDT ;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;
 gdt_start:
     dq 0x0000000000000000     ; null descriptor
-    dq 0x00CF9A000000FFFF     ; code segment
-    dq 0x00CF92000000FFFF     ; data segment
+    dq 0x00CF9A000000FFFF     ; kernel code segment
+    dq 0x00CF92000000FFFF     ; kernel data segment
 gdt_end:
 
 gdt_descriptor:
@@ -163,6 +166,10 @@ disk_error:
 	call print16b
 	jmp $
 
+
+;;;;;;;;;;;;;;;;;;;;
+;;;;; 32 MODE ;;;;;;
+;;;;;;;;;;;;;;;;;;;;
 bits 32
 pm_entry:
     mov ax, 0x10
