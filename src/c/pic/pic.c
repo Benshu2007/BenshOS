@@ -1,5 +1,6 @@
 #include "pic.h"
 #include "../helpers/common.h"
+#include "../drivers/driver/driver.h"
 #include "../terminal/terminal.h"
 #include <stdint.h>
 
@@ -89,12 +90,5 @@ void pic_init(void) {
   terminal_log("Initializing PIC Routing...");
   PIC_remap(0x20, 0x28); // Vectors 32-39 for Master, 40-47 for Slave
 
-  // Activate the specific wires you want your irq_handler to capture
-  IRQ_clear_mask(0); // Unmask Timer (IRQ 0 / Vector 32)
-  IRQ_clear_mask(1); // Unmask Keyboard (IRQ 1 / Vector 33)
-
-  terminal_log("Enabling Interrupt Flag...");
-  __asm__ volatile("sti"); // Signals the CPU to start processing hardware lines
-
-  terminal_log("System live and listening.");
+  driver_manager_init();
 }

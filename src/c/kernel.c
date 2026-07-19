@@ -1,3 +1,5 @@
+#include "drivers/driver/driver.h"
+#include "drivers/keyboard/keyboard.h"
 #include "gdt/gdt.h"
 #include "idt/idt.h"
 #include "pic/pic.h"
@@ -16,11 +18,23 @@
 void kernel_main(void) {
     terminal_start();
     gdt_init();
+    terminal_log("GDT Successfully initialized!");
     idt_init();
+    terminal_log("IDT Successfully initialized!");
     pic_init();
+    terminal_log("PIC Successfully initialized!");
+
+
+    if (!driver_register(&keyboard_driver, 1)) {
+        terminal_log("Error registring keyboard driver!");
+    } else 
+        terminal_log("Keyboard driver Successfully registerd!");
+
+    terminal_log("Driver interface established. Enabling STI master flag.");
+    __asm__ volatile("sti"); 
 
     while (true) {
-        __asm__ volatile("hlt"); // CPU sleeps efficiently until an IRQ wakes it
+        __asm__ volatile("hlt"); // Rest the CPU cycles smoothly
     }
 }
 

@@ -1,6 +1,7 @@
 #!/bin/zsh
 
 mkdir -p build
+mkdir -p build/drivers
 nasm -f bin src/asm/boot.asm -o build/boot.bin
 nasm -f elf32 src/asm/kernel_entry.asm -o build/kernel_entry.o
 nasm -f elf32 src/asm/flush_gdt.asm -o build/flush_gdt.o
@@ -16,8 +17,8 @@ i686-elf-gcc -ffreestanding -c src/c/gdt/gdt.c -o build/gdt.o
 i686-elf-gcc -ffreestanding -c src/c/pic/pic.c -o build/pic.o
 i686-elf-gcc -ffreestanding -c src/c/idt/idt.c -o build/idt.o
 i686-elf-gcc -ffreestanding -c src/c/idt/interrupts.c -o build/interrupts.o
-i686-elf-gcc -ffreestanding -c src/c/keyboard/keyboard.c -o build/keyboard.o
-
+i686-elf-gcc -ffreestanding -c src/c/drivers/keyboard/keyboard.c -o build/drivers/keyboard.o
+i686-elf-gcc -ffreestanding -c src/c/drivers/driver/driver.c -o build/drivers/driver.o
 
 i686-elf-ld -g -T linker.ld
 

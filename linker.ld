@@ -1,7 +1,8 @@
 ENTRY(_start)
 
 INPUT(
-    build/keyboard.o
+    build/drivers/driver.o
+    build/drivers/keyboard.o
     build/kernel_entry.o
     build/terminal.o
     build/common.o
@@ -21,29 +22,35 @@ OUTPUT(build/kernel.bin)
 
 SECTIONS
 {
-    /* We load kernel at 0x1000 from bootloader */
+    /* Load kernel at 0x1000 from bootloader */
     . = 0x1000;
-    .text : ALIGN(4K)
+
+    /* Enforce 8K block padding with capitalized uppercase ALIGN syntax */
+    .text BLOCK(8K) : ALIGN(8K)
     {
         *(.multiboot)
-        *(.text*)
+        *(.text)
+        *(.text.*)      /* Captures GCC compiler sub-functions safely */
     }
 
-    .rodata : ALIGN(4K)
+    .rodata BLOCK(4K) : ALIGN(4K)
     {
-        *(.rodata*)
+        *(.rodata)
+        *(.rodata.*)    /* Captures all local string constants safely */
     }
 
-    .data : ALIGN(4K)
+    .data BLOCK(4K) : ALIGN(4K)
     {
-        *(.data*)
+        *(.data)
+        *(.data.*)      /* Captures all initialized global sub-variables safely */
     }
 
-    .bss : ALIGN(4K)
+    .bss BLOCK(4K) : ALIGN(4K)
     {
         _bss_start = .;
         *(COMMON)
-        *(.bss*)
+        *(.bss)
+        *(.bss.*)       /* Captures all uninitialized memory spaces safely */
         _bss_end = .;
     }
 }
