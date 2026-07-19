@@ -1,6 +1,7 @@
 ENTRY(_start)
 
 INPUT(
+    build/keyboard.o
     build/kernel_entry.o
     build/terminal.o
     build/common.o
@@ -8,7 +9,6 @@ INPUT(
     build/idt.o
     build/vga.o
     build/pic.o
-    build/keyboard.o
     build/kernel.o
     build/flush_gdt.o
     build/flush_idt.o

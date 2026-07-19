@@ -1,6 +1,6 @@
 #include "common.h"
 
-size_t strlen (const char* str) {
+size_t kstrlen (const char* str) {
     size_t len = 0;
     while (str[len])
         len++;
@@ -23,7 +23,7 @@ void io_wait(void)
     outb(0x80, 0);
 }
 
-void* memset(void* dest, int value, size_t count) {
+void* kmemset(void* dest, int value, size_t count) {
     unsigned char* ptr = dest;
 
     for (size_t i = 0; i < count; i++) {

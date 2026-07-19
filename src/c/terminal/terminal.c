@@ -1,6 +1,6 @@
 #include "terminal.h"
-#include "../helpers/keyboard.h"
 #include "../helpers/vga.h"
+#include "../helpers/common.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -136,7 +136,7 @@ static void terminal_write(const char *data, size_t size) {
 }
 
 static void reset_input(void) {
-  memset((void *)terminal_input_buffer, 0, sizeof(terminal_input_buffer));
+  kmemset((void *)terminal_input_buffer, 0, sizeof(terminal_input_buffer));
   input_len = 0;
 }
 
@@ -146,7 +146,7 @@ static void terminal_putchar(char c) {
 }
 
 static void terminal_writestring(const char *data) {
-  terminal_write(data, strlen(data));
+  terminal_write(data, kstrlen(data));
 
   terminal_flush();
 }
@@ -201,19 +201,6 @@ static void terminal_initialize(void) {
   terminal_flush();
 
   password_mode = false;
-}
-
-static void terminal_recv(void) {
-  input_mode = true;
-
-  terminal_writestring("BENOS>>");
-
-  while (input_mode) {
-    KeyboardEvent ch = keyboard_input();
-
-    if (ch.code != KEY_NONE)
-      keyboard_handle_event(ch);
-  }
 }
 
 // --- PUBLIC TERMINAL INTERFACE ---
