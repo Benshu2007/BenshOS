@@ -47,7 +47,14 @@ void kregister_driver(uint8_t irq_line, driver_t *driver,
   }
 }
 
-void kernel_main(void) {
+void drivers_init(void) {
+  kregister_driver(0, &timer_driver, "Timer");
+  kregister_driver(1, &keyboard_driver, "Keyboard");
+
+  keyboard_set_callback(my_terminal_keyboard_callback);
+}
+
+void kernel_init(void) {
   terminal_start();
   gdt_init();
   terminal_log("GDT Successfully initialized!");
@@ -55,16 +62,16 @@ void kernel_main(void) {
   terminal_log("IDT Successfully initialized!");
   pic_init();
   terminal_log("PIC Successfully initialized!");
+  drivers_init();
+  terminal_log("Drivers Successfully initialized!");
 
-  kregister_driver(0, &timer_driver, "Timer");
-  kregister_driver(1, &keyboard_driver, "Keyboard");
+  __asm__ volatile("sti");
+}
 
-  keyboard_set_callback(my_terminal_keyboard_callback);
+void kernel_main(void) {
+  kernel_init();
 
   rtc_print_current_time(3);
-
-  terminal_log("Driver interface established. Enabling STI master flag.");
-  __asm__ volatile("sti");
 
   while (true) {
     __asm__ volatile("hlt"); // Rest the CPU cycles smoothly

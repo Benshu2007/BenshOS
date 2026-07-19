@@ -378,6 +378,8 @@ static char *itoa(int value, char *buffer) {
 }
 
 void terminal_log(const char *format_str, ...) {
+  __asm__ volatile("cli");
+
   terminal_writestring("\nLOG::");
   char output_buffer[1024]; // Safe internal scratchpad memory
   size_t out_idx = 0;
@@ -427,6 +429,8 @@ void terminal_log(const char *format_str, ...) {
   // Send the completed, formatted string to your system's write function
   terminal_writestring(output_buffer);
   terminal_writestring("\n");
+
+  __asm__ volatile("sti");
 }
 
 void terminal_start(void) {
