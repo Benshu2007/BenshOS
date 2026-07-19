@@ -4,6 +4,7 @@
 #include "gdt/gdt.h"
 #include "idt/idt.h"
 #include "pic/pic.h"
+#include "rtc/rtc.h"
 #include "terminal/terminal.h"
 #include <stdbool.h>
 
@@ -40,9 +41,9 @@ void my_terminal_keyboard_callback(KeyboardEvent ev) {
 void kregister_driver(uint8_t irq_line, driver_t *driver,
                       const char *driver_name) {
   if (!driver_register(driver, irq_line)) {
-    terminal_log("Error registring % driver!", driver_name);
+    terminal_log("Error registring %s driver!", driver_name);
   } else {
-    terminal_log("% driver Successfully registerd!", driver_name);
+    terminal_log("%s driver Successfully registerd!", driver_name);
   }
 }
 
@@ -59,6 +60,8 @@ void kernel_main(void) {
   kregister_driver(1, &keyboard_driver, "Keyboard");
 
   keyboard_set_callback(my_terminal_keyboard_callback);
+
+  rtc_print_current_time(3);
 
   terminal_log("Driver interface established. Enabling STI master flag.");
   __asm__ volatile("sti");

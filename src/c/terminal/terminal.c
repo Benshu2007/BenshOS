@@ -335,6 +335,48 @@ void terminal_log_number(uint32_t number) {
   terminal_putchar('\n');
 }
 
+static char *itoa(int value, char *buffer) {
+  char *ptr = buffer;
+  char *ptr1 = buffer;
+  char tmp_char;
+  int tmp_value;
+
+  // Handle negative numbers (only for base 10)
+  int is_negative = 0;
+  if (value < 0) {
+    is_negative = 1;
+    value = -value;
+  }
+
+  // Extract characters from right to left (modulus loop)
+  do {
+    tmp_value = value;
+    value /= 10;
+    *ptr++ = "0123456789"[tmp_value - value * 10];
+  } while (value);
+
+  // Append the negative sign if necessary
+  if (is_negative) {
+    *ptr++ = '-';
+  }
+
+  // Terminate the C-string with a null character
+  *ptr = '\0';
+
+  // The digits are currently backwards (e.g., 123 is stored as "321").
+  // We must reverse the string in place to fix it.
+  ptr--;
+  while (ptr1 < ptr) {
+    tmp_char = *ptr;
+    *ptr = *ptr1;
+    *ptr1 = tmp_char;
+    ptr1++;
+    ptr--;
+  }
+
+  return buffer;
+}
+
 void terminal_log(const char *format_str, ...) {
   terminal_writestring("\nLOG::");
   char output_buffer[1024]; // Safe internal scratchpad memory
@@ -346,12 +388,18 @@ void terminal_log(const char *format_str, ...) {
   va_start(args, format_str);
 
   for (size_t i = 0; format_str[i] != '\0' && out_idx < max_len; i++) {
-
     // If we encounter a lone '%' symbol, swap it with the next string argument
     if (format_str[i] == '%') {
-
       // Extract the next sequential string argument
-      const char *current_arg = va_arg(args, const char *);
+      char *current_arg;
+      if (format_str[i + 1] == 's') {
+        current_arg = (char *)va_arg(args, const char *);
+        ;
+      } else if (format_str[i + 1] == 'n') {
+        current_arg = itoa(va_arg(args, int), current_arg);
+      } else {
+        current_arg = "%";
+      }
 
       // Safe fallback if a NULL pointer is accidentally passed
       if (current_arg == NULL) {
@@ -362,6 +410,8 @@ void terminal_log(const char *format_str, ...) {
       for (size_t j = 0; current_arg[j] != '\0' && out_idx < max_len; j++) {
         output_buffer[out_idx++] = current_arg[j];
       }
+      if (format_str[i + 1] == 'n' || format_str[i + 1] == 's')
+        i++;
     } else {
       // Copy normal characters directly
       output_buffer[out_idx++] = format_str[i];

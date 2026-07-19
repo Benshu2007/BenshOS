@@ -21,6 +21,7 @@ i686-elf-gcc -ffreestanding -c src/c/drivers/keyboard/keyboard.c -o build/driver
 i686-elf-gcc -ffreestanding -c src/c/drivers/timer/timer.c -o build/drivers/timer.o
 i686-elf-gcc -ffreestanding -c src/c/drivers/driver/driver.c -o build/drivers/driver.o
 
+i686-elf-gcc -ffreestanding -c src/c/rtc/rtc.c -o build/rtc.o
 i686-elf-ld -g -T linker.ld
 
 dd if=/dev/zero of=build/os-image.bin bs=512 count=2880
