@@ -37,9 +37,9 @@ void my_terminal_keyboard_callback(KeyboardEvent ev) {
   }
 }
 
-void kregister_driver(uint8_t irq_line, driver_t driver,
+void kregister_driver(uint8_t irq_line, driver_t *driver,
                       const char *driver_name) {
-  if (!driver_register(&timer_driver, 0)) {
+  if (!driver_register(driver, irq_line)) {
     terminal_log("Error registring % driver!", driver_name);
   } else {
     terminal_log("% driver Successfully registerd!", driver_name);
@@ -55,8 +55,8 @@ void kernel_main(void) {
   pic_init();
   terminal_log("PIC Successfully initialized!");
 
-  kregister_driver(0, timer_driver, "Timer");
-  kregister_driver(1, keyboard_driver, "Keyboard");
+  kregister_driver(0, &timer_driver, "Timer");
+  kregister_driver(1, &keyboard_driver, "Keyboard");
 
   keyboard_set_callback(my_terminal_keyboard_callback);
 

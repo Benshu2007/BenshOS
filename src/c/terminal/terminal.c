@@ -1,6 +1,6 @@
 #include "terminal.h"
-#include "../helpers/common.h"
-#include "../helpers/vga.h"
+#include "../common/common.h"
+#include "../vga/vga.h"
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stddef.h>

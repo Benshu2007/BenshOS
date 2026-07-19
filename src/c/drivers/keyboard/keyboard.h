@@ -2,7 +2,7 @@
 #define KEYBOARD_H
 
 #include "../driver/driver.h"
-#include "../../helpers/common.h"
+#include "../../common/common.h"
 #include <stdbool.h>
 #include <stdint.h>
 

@@ -1,5 +1,5 @@
 #include "gdt.h"
-#include "../helpers/bits.h"
+#include "../bits/bits.h"
 #include <stdint.h>
 
 extern void flush_gdt(GDTR* gdtr);

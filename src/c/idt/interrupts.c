@@ -6,7 +6,7 @@
 
 void exception_handler(interrupt_frame_t* frame)
 {
-    terminal_log("Exception");
+    terminal_log("Exception in vector");
 
     terminal_log_hex(frame->vector);
 

@@ -1,5 +1,5 @@
 #include "timer.h"
-#include "../../helpers/common.h"
+#include "../../common/common.h"
 
 // Hardware baseline constants
 #define PIT_OSCILLATOR_BASE_HZ 1193182

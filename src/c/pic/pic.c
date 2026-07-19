@@ -1,5 +1,5 @@
 #include "pic.h"
-#include "../helpers/common.h"
+#include "../common/common.h"
 #include "../drivers/driver/driver.h"
 #include "../terminal/terminal.h"
 #include <stdint.h>
