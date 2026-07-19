@@ -1,6 +1,7 @@
 ENTRY(_start)
 
 INPUT(
+    build/rtc.o
     build/drivers/driver.o
     build/drivers/keyboard.o
     build/drivers/timer.o
