@@ -348,7 +348,7 @@ void terminal_log_number(uint32_t number) {
 }
 
 void terminal_log(const char *string) {
-  terminal_writestring("\nLOG>");
+  terminal_writestring("\nLOG::");
   terminal_writestring(string);
   terminal_writestring("\n");
 }

@@ -7,6 +7,7 @@ INPUT(
     build/gdt.o
     build/idt.o
     build/vga.o
+    build/pic.o
     build/keyboard.o
     build/kernel.o
     build/flush_gdt.o

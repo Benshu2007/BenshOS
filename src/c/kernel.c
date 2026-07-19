@@ -1,6 +1,7 @@
 #include "gdt/gdt.h"
-#include "terminal/terminal.h"
 #include "idt/idt.h"
+#include "pic/pic.h"
+#include "terminal/terminal.h"
 #include <stdbool.h>
 
 #if defined(__linux__)
@@ -13,14 +14,13 @@
 #endif
 
 void kernel_main(void) {
-  terminal_start();
-  gdt_init();
-  idt_init();
+    terminal_start();
+    gdt_init();
+    idt_init();
+    pic_init();
 
-  terminal_log("GDT LOADED");
-
-  // check the idt
-  // int i = 5 / 0;
-
-  while (true);
+    while (true) {
+        __asm__ volatile("hlt"); // CPU sleeps efficiently until an IRQ wakes it
+    }
 }
+

@@ -18,6 +18,11 @@ uint8_t inb(uint16_t port) {
     return value;
 }
 
+void io_wait(void)
+{
+    outb(0x80, 0);
+}
+
 void* memset(void* dest, int value, size_t count) {
     unsigned char* ptr = dest;
 

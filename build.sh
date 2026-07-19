@@ -8,6 +8,7 @@ i686-elf-gcc -ffreestanding -c src/c/terminal/terminal.c -o build/terminal.o
 i686-elf-gcc -ffreestanding -c src/c/helpers/common.c -o build/common.o
 i686-elf-gcc -ffreestanding -c src/c/helpers/bits.c -o build/bits.o
 i686-elf-gcc -ffreestanding -c src/c/gdt/gdt.c -o build/gdt.o
+i686-elf-gcc -ffreestanding -c src/c/pic/pic.c -o build/pic.o
 i686-elf-gcc -ffreestanding -c src/c/idt/idt.c -o build/idt.o
 i686-elf-gcc -ffreestanding -c src/c/idt/interrupts.c -o build/interrupts.o
 i686-elf-gcc -ffreestanding -c src/c/helpers/keyboard.c -o build/keyboard.o
