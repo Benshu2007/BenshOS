@@ -15,6 +15,27 @@
 #error "This tutorial needs to be compiled with a ix86-elf compiler"
 #endif
 
+void my_terminal_keyboard_callback(KeyboardEvent ev) {
+    // 1. Only act when a human presses a key down (ignore release/break codes)
+    if (ev.press) {
+        
+        // 2. Optional: Intercept a control hotkey combination (e.g., Ctrl + C)
+        if (ev.ctrl && ev.code == KEY_C) {
+            terminal_log("\n[Caught Ctrl+C!]\n");
+            return;
+        }
+
+        // 3. Fallback: If it's a standard letter/number, translate and print
+        // (Note: ensure keyboard_translate_event_to_ascii is either public or accessible)
+        char ascii = keyboard_translate(ev);
+        if (ascii != '\0') {
+            const char str[2] = {ascii, '\0'};
+            terminal_log(str); 
+        }
+    }
+}
+
+
 void kernel_main(void) {
     terminal_start();
     gdt_init();
@@ -25,10 +46,13 @@ void kernel_main(void) {
     terminal_log("PIC Successfully initialized!");
 
 
+
     if (!driver_register(&keyboard_driver, 1)) {
         terminal_log("Error registring keyboard driver!");
     } else 
         terminal_log("Keyboard driver Successfully registerd!");
+
+    keyboard_set_callback(my_terminal_keyboard_callback);
 
     terminal_log("Driver interface established. Enabling STI master flag.");
     __asm__ volatile("sti"); 

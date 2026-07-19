@@ -204,11 +204,15 @@ typedef struct {
 //     '('
 // };
 
+typedef void (*keyboard_callback_t)(KeyboardEvent ev);
+
 KeyboardEvent keyboard_input(void);
 void keyboard_handle_event(KeyboardEvent ev);
 
 // The public interface for your future shell application to read user input
+void keyboard_set_callback(keyboard_callback_t cb);
 bool keyboard_has_event(void);
 KeyboardEvent keyboard_get_event(void);
+char keyboard_translate(KeyboardEvent ev);
 
 #endif

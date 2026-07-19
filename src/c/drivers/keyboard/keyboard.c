@@ -15,6 +15,8 @@ static bool ctrl = false;
 static bool alt = false;
 static bool released = false;
 
+static keyboard_callback_t activate_callback = NULL;
+
 static const char shift_nums[10] = {
     ')',
     '!',
@@ -44,64 +46,6 @@ static void buffer_push_event(KeyboardEvent ev) {
 
   keyboard_buffer[next_head] = ev;
   buffer_head = next_head;
-}
-
-static char keyboard_translate(KeyboardEvent ev) {
-  if (!is_printable(ev) || ev.code == KEY_NONE)
-    return '\0';
-
-  if (ev.code == KEY_SPACE)
-    return ' ';
-  if (ev.code == KEY_ENTER)
-    return '\n';
-  if (ev.code == KEY_TAB)
-    return '\t';
-  if (ev.code == KEY_BACKSPACE)
-    return '\b';
-
-  KEYBOARD_CODE code = ev.code;
-  bool upper = ev.shift ^ ev.caps_lock; // XOR: either shift or caps, not both
-
-  /* Letters */
-  if (code >= KEY_A && code <= KEY_Z) {
-    char c = 'a' + (code - KEY_A);
-    return upper ? c - 'a' + 'A' : c;
-  }
-
-  /* Top-row numbers */
-  if (code >= KEY_0 && code <= KEY_9) {
-    char c = '0' + (code - KEY_0);
-    return ev.shift ? shift_nums[code - KEY_0] : c;
-  }
-
-  switch (code) {
-  /* Symbols (unshifted / shifted) */
-  case KEY_GRAVE:
-    return ev.shift ? '~' : '`';
-  case KEY_MINUS:
-    return ev.shift ? '_' : '-';
-  case KEY_EQUALS:
-    return ev.shift ? '+' : '=';
-  case KEY_LEFT_BRACKET:
-    return ev.shift ? '{' : '[';
-  case KEY_RIGHT_BRACKET:
-    return ev.shift ? '}' : ']';
-  case KEY_BACKSLASH:
-    return ev.shift ? '|' : '\\';
-  case KEY_SEMICOLON:
-    return ev.shift ? ':' : ';';
-  case KEY_APOSTROPHE:
-    return ev.shift ? '"' : '\'';
-  case KEY_COMMA:
-    return ev.shift ? '<' : ',';
-  case KEY_PERIOD:
-    return ev.shift ? '>' : '.';
-  case KEY_SLASH:
-    return ev.shift ? '?' : '/';
-
-  default:
-    return '\0'; /* not printable */
-  }
 }
 
 static bool is_arrow(KEYBOARD_CODE code) {
@@ -508,13 +452,6 @@ static bool keyboard_init(void) {
   buffer_head = 0;
   buffer_tail = 0;
 
-  shift = false;
-  caps_lock = false;
-  ctrl = false;
-  alt = false;
-  released = false;
-
-
   return true;
 }
 
@@ -525,41 +462,29 @@ static void keyboard_handle_interrupt(void) {
   ev.code = keyboard_translate_scancode(scancode);
   ev.press = !released;
 
+
   if (ev.code == KEY_LEFT_SHIFT || ev.code == KEY_RIGHT_SHIFT) {
     shift = ev.press;
-    ev.shift = shift;
   } else if (ev.code == KEY_LEFT_CTRL || ev.code == KEY_RIGHT_CTRL) {
     ctrl = ev.press;
-    ev.ctrl = ctrl;
   } else if (ev.code == KEY_LEFT_ALT || ev.code == KEY_RIGHT_ALT) {
     alt = ev.press;
-    ev.alt = alt;
   } else if (ev.code == KEY_CAPS_LOCK && ev.press) {
     caps_lock = !caps_lock;
-    ev.caps_lock = caps_lock;
   }
+
+  ev.shift = shift;
+  ev.ctrl = ctrl;
+  ev.alt = alt;
+  ev.caps_lock = caps_lock;
 
   if (ev.code != KEY_NONE) {
     buffer_push_event(ev);
-  }
 
-  if (ev.press && is_printable(ev)) {
-    char ch = keyboard_translate(ev);
-    if (ch != '\0') {
-      const char str[2] = {ch, '\0'};
-      terminal_log(str);
+    if (activate_callback != NULL) {
+      activate_callback(ev);
     }
   }
-
-  // Support Arrow Key Handlers explicitly if your terminal intercepts them
-  if (ev.press && ev.code == KEY_UP)
-    terminal_arrow_handle('u');
-  if (ev.press && ev.code == KEY_DOWN)
-    terminal_arrow_handle('d');
-  if (ev.press && ev.code == KEY_LEFT)
-    terminal_arrow_handle('l');
-  if (ev.press && ev.code == KEY_RIGHT)
-    terminal_arrow_handle('r');
 }
 
 driver_t keyboard_driver = {.name = "PS/2 Keyboard Driver",
@@ -567,6 +492,10 @@ driver_t keyboard_driver = {.name = "PS/2 Keyboard Driver",
                             .init = keyboard_init,
                             .handle_interrupt = keyboard_handle_interrupt,
                             .disable = NULL};
+
+void keyboard_set_callback(keyboard_callback_t cb) {
+  activate_callback = cb;
+}
 
 bool keyboard_has_event(void) {
   return buffer_head != buffer_tail;
@@ -581,4 +510,61 @@ KeyboardEvent keyboard_get_event(void) {
   KeyboardEvent ev = keyboard_buffer[buffer_tail];
   buffer_tail = (buffer_tail + 1) % KEYBOARD_BUFFER_SIZE;
   return ev;
+}
+
+char keyboard_translate(KeyboardEvent ev) {
+  if (!is_printable(ev) || ev.code == KEY_NONE)
+    return '\0';
+
+  if (ev.code == KEY_SPACE)
+    return ' ';
+  if (ev.code == KEY_ENTER)
+    return '\n';
+  if (ev.code == KEY_TAB)
+    return '\t';
+  if (ev.code == KEY_BACKSPACE)
+    return '\b';
+
+  KEYBOARD_CODE code = ev.code;
+  bool upper = ev.shift ^ ev.caps_lock; // XOR: either shift or caps, not both
+  /* Letters */
+  if (code >= KEY_A && code <= KEY_Z) {
+    char c = 'a' + (code - KEY_A);
+    return upper ? c - 'a' + 'A' : c;
+  }
+
+  /* Top-row numbers */
+  if (code >= KEY_0 && code <= KEY_9) {
+    char c = '0' + (code - KEY_0);
+    return ev.shift ? shift_nums[code - KEY_0] : c;
+  }
+
+  switch (code) {
+  /* Symbols (unshifted / shifted) */
+  case KEY_GRAVE:
+    return ev.shift ? '~' : '`';
+  case KEY_MINUS:
+    return ev.shift ? '_' : '-';
+  case KEY_EQUALS:
+    return ev.shift ? '+' : '=';
+  case KEY_LEFT_BRACKET:
+    return ev.shift ? '{' : '[';
+  case KEY_RIGHT_BRACKET:
+    return ev.shift ? '}' : ']';
+  case KEY_BACKSLASH:
+    return ev.shift ? '|' : '\\';
+  case KEY_SEMICOLON:
+    return ev.shift ? ':' : ';';
+  case KEY_APOSTROPHE:
+    return ev.shift ? '"' : '\'';
+  case KEY_COMMA:
+    return ev.shift ? '<' : ',';
+  case KEY_PERIOD:
+    return ev.shift ? '>' : '.';
+  case KEY_SLASH:
+    return ev.shift ? '?' : '/';
+
+  default:
+    return '\0'; /* not printable */
+  }
 }
