@@ -1,6 +1,7 @@
 #include "terminal.h"
-#include "../helpers/vga.h"
 #include "../helpers/common.h"
+#include "../helpers/vga.h"
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -334,9 +335,47 @@ void terminal_log_number(uint32_t number) {
   terminal_putchar('\n');
 }
 
-void terminal_log(const char *string) {
+void terminal_log(const char *format_str, ...) {
   terminal_writestring("\nLOG::");
-  terminal_writestring(string);
+  char output_buffer[1024]; // Safe internal scratchpad memory
+  size_t out_idx = 0;
+  size_t max_len = sizeof(output_buffer) - 1; // Reserve room for '\0'
+
+  // Initialize the variadic argument list pointer
+  va_list args;
+  va_start(args, format_str);
+
+  for (size_t i = 0; format_str[i] != '\0' && out_idx < max_len; i++) {
+
+    // If we encounter a lone '%' symbol, swap it with the next string argument
+    if (format_str[i] == '%') {
+
+      // Extract the next sequential string argument
+      const char *current_arg = va_arg(args, const char *);
+
+      // Safe fallback if a NULL pointer is accidentally passed
+      if (current_arg == NULL) {
+        current_arg = "(null)";
+      }
+
+      // Manually copy the argument characters into the temporary buffer
+      for (size_t j = 0; current_arg[j] != '\0' && out_idx < max_len; j++) {
+        output_buffer[out_idx++] = current_arg[j];
+      }
+    } else {
+      // Copy normal characters directly
+      output_buffer[out_idx++] = format_str[i];
+    }
+  }
+
+  // Clean up argument list state from the CPU stack
+  va_end(args);
+
+  // Explicitly set the null-terminator to seal the formatted C-string
+  output_buffer[out_idx] = '\0';
+
+  // Send the completed, formatted string to your system's write function
+  terminal_writestring(output_buffer);
   terminal_writestring("\n");
 }
 

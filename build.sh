@@ -18,6 +18,7 @@ i686-elf-gcc -ffreestanding -c src/c/pic/pic.c -o build/pic.o
 i686-elf-gcc -ffreestanding -c src/c/idt/idt.c -o build/idt.o
 i686-elf-gcc -ffreestanding -c src/c/idt/interrupts.c -o build/interrupts.o
 i686-elf-gcc -ffreestanding -c src/c/drivers/keyboard/keyboard.c -o build/drivers/keyboard.o
+i686-elf-gcc -ffreestanding -c src/c/drivers/timer/timer.c -o build/drivers/timer.o
 i686-elf-gcc -ffreestanding -c src/c/drivers/driver/driver.c -o build/drivers/driver.o
 
 i686-elf-ld -g -T linker.ld

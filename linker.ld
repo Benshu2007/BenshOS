@@ -3,6 +3,7 @@ ENTRY(_start)
 INPUT(
     build/drivers/driver.o
     build/drivers/keyboard.o
+    build/drivers/timer.o
     build/kernel_entry.o
     build/terminal.o
     build/common.o
